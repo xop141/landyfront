@@ -1,30 +1,28 @@
+"use client"
 import React from 'react';
 import { Facebook, Github, Instagram } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-
+import LogoLoop from '../reactBits/LogoLoop/LogoLoop';
 const icons = [Facebook, Github, Instagram];
-
+const techLogos = [
+  { node: <Facebook />, title: "React", href: "https://react.dev" },
+  { node: <Github />, title: "Next.js", href: "https://nextjs.org" },
+  { node: <Instagram />, title: "TypeScript", href: "https://www.typescriptlang.org" }
+];
 const Footer = () => {
   return (
-    <div className="m-4 rounded-xl p-4 flex flex-col gap-4">
-      <div className='flex items-center gap-2'>
-        
-        <span className='font-bold'>Landy</span>
-      </div>
+   <div className='py-6'>
 
-      <Separator className="bg-white/20" />
-
-      <div className='flex gap-2'>
-        {icons.map((Icon, index) => (
-          <div
-            key={index}
-            className='p-2 bg-white/20 backdrop-blur-xl rounded-xl hover:bg-white/30 transition-colors'
-          >
-            <Icon className="w-6 h-6 " />
-          </div>
-        ))}
-      </div>
-    </div>
+      <LogoLoop
+        logos={techLogos}
+        speed={30}
+        direction="left"
+        logoHeight={48}
+        gap={80}
+        pauseOnHover
+        scaleOnHover
+      />
+</div>
   );
 };
 

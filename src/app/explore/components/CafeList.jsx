@@ -14,6 +14,7 @@ import Filters from "./Filters";
 import Loader from "./Loader";
 import { useCafe } from "@/context/CafeContext";
 import AnimatedList from "@/components/reactBits/AnimatedList/AnimatedList";
+
 const CafeList = () => {
   const { cafes, isLoading, error } = useCafe();
 
