@@ -33,7 +33,7 @@ export default function Home() {
         />
       </div>
 
-      <div className="absolute bottom-0 w-full flex flex-col sm:flex-row flex-wrap justify-center gap-4 py-24 text-[#E0E0FF] px-2">
+      <div className="absolute bottom-0 w-full flex flex-col sm:flex-row flex-wrap justify-center gap-4 py-24 text-[#060010] px-2">
         <Button
           className="border border-[#3201F4] bg-transparent backdrop-blur-xl p-4 sm:p-6 w-full sm:w-auto"
           onClick={explore}
