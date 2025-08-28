@@ -17,7 +17,7 @@ export default function Home() {
         <Orb
           hoverIntensity={2.2}
           rotateOnHover={true}
-          hue={266}
+          hue={0}
           forceHoverState={false}
         />
       </div>
