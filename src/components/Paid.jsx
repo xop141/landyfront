@@ -3,14 +3,7 @@ import React from "react";
 import ElectricBorder from "./reactBits/ElectricBorder/ElectricBorder";
 const Paid = () => {
   return (
-    <ElectricBorder
-      color="#7df9ff"
-      speed={1}
-      chaos={0.5}
-      thickness={2}
-      style={{ borderRadius: 16 }}
-    >
-      <div>
+    
 
     
       <div
@@ -26,8 +19,7 @@ const Paid = () => {
         <h2 className="text-lg font-semibold">some ad</h2>
         <p className="text-sm">early bird</p>
       </div>
-        </div>
-    </ElectricBorder>
+    
   );
 };
 

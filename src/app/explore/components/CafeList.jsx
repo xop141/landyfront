@@ -20,7 +20,7 @@ const CafeList = () => {
 
   if (error) return <div>❌ Failed to load</div>;
   if (isLoading) return <Loader />;
-console.log(cafes);
+
 
 
   return (
