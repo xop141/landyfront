@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const Page = () => {
-  const [pcs, setPcs] = useState([]); // always start with empty array
+  const [pcs, setPcs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -15,7 +15,6 @@ const Page = () => {
         "https://landybackend.onrender.com/pc/member"
       );
 
-      // Make sure pcs is always an array
       const dataArray = Array.isArray(response.data)
         ? response.data
         : response.data?.data || [];
@@ -29,10 +28,15 @@ const Page = () => {
     }
   };
 
+  const getStatusColor = (pc) => {
+    if (!pc.pc_enabled) return "bg-gray-400"; // disabled
+    return pc.pc_in_using ? "bg-red-500" : "bg-green-500"; // in use vs available
+  };
+
   return (
     <div className="p-4">
       <button
-        className="bg-green-300 px-[20px] py-[10px] mb-4"
+        className="bg-blue-500 text-white px-4 py-2 mb-4 rounded"
         onClick={test}
       >
         Load PCs
@@ -41,15 +45,17 @@ const Page = () => {
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">Error: {error}</p>}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
         {pcs.map((pc) => (
-          <div key={pc.pc_mac} className="border p-4 rounded shadow">
-            <h3 className="font-bold text-lg">{pc.pc_name}</h3>
-            <p>Area: {pc.pc_area_name}</p>
-            <p>IP: {pc.pc_ip}</p>
-            <p>Status: {pc.pc_in_using ? "In Use" : "Available"}</p>
-            <p>Enabled: {pc.pc_enabled ? "Yes" : "No"}</p>
-            <p>Comment: {pc.pc_comment || "None"}</p>
+          <div
+            key={pc.pc_mac}
+            className={`p-2 rounded shadow text-white text-center ${getStatusColor(pc)}`}
+            title={`IP: ${pc.pc_ip}\nArea: ${pc.pc_area_name}`}
+          >
+            <p className="font-bold text-sm">{pc.pc_name}</p>
+            <p className="text-xs">
+              {pc.pc_in_using ? "In Use" : "Available"}
+            </p>
           </div>
         ))}
       </div>
