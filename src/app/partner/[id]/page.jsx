@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import axios from "axios";
 
 const Page = () => {
-  const [pcs, setPcs] = useState([]); // state to store PCs
-  const [loading, setLoading] = useState(false); // loading state
-  const [error, setError] = useState(null); // error state
+  const [pcs, setPcs] = useState([]); // always start with empty array
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const test = async () => {
     setLoading(true);
@@ -14,7 +14,13 @@ const Page = () => {
       const response = await axios.post(
         "https://landybackend.onrender.com/pc/member"
       );
-      setPcs(response.data); // store data in state
+
+      // Make sure pcs is always an array
+      const dataArray = Array.isArray(response.data)
+        ? response.data
+        : response.data?.data || [];
+
+      setPcs(dataArray);
     } catch (err) {
       console.error("Error fetching members:", err.response?.data || err.message);
       setError(err.response?.data || err.message);
@@ -37,10 +43,7 @@ const Page = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {pcs.map((pc) => (
-          <div
-            key={pc.pc_mac} // mac is unique
-            className="border p-4 rounded shadow"
-          >
+          <div key={pc.pc_mac} className="border p-4 rounded shadow">
             <h3 className="font-bold text-lg">{pc.pc_name}</h3>
             <p>Area: {pc.pc_area_name}</p>
             <p>IP: {pc.pc_ip}</p>
