@@ -39,12 +39,12 @@ const Page = () => {
 
   return (
     <div className="p-4">
-      <button
+      {/* <button
         className="bg-blue-500 text-white px-4 py-2 mb-4 rounded"
         onClick={test}
       >
         Load PCs
-      </button>
+      </button> */}
 
       {/* {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">Error: {error}</p>} */}
