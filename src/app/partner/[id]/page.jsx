@@ -20,6 +20,10 @@ const Page = () => {
         : response.data?.data || [];
 
       setPcs(dataArray);
+      console.log(dataArray);
+      
+    
+      
     } catch (err) {
       console.error("Error fetching members:", err.response?.data || err.message);
       setError(err.response?.data || err.message);
@@ -42,11 +46,11 @@ const Page = () => {
         Load PCs
       </button>
 
-      {loading && <p>Loading...</p>}
-      {error && <p className="text-red-500">Error: {error}</p>}
+      {/* {loading && <p>Loading...</p>}
+      {error && <p className="text-red-500">Error: {error}</p>} */}
 
       <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-        {pcs.map((pc) => (
+        {/* {pcs.map((pc) => (
           <div
             key={pc.pc_mac}
             className={`p-2 rounded shadow text-white text-center ${getStatusColor(pc)}`}
@@ -57,7 +61,7 @@ const Page = () => {
               {pc.pc_in_using ? "In Use" : "Available"}
             </p>
           </div>
-        ))}
+        ))} */}
       </div>
     </div>
   );
