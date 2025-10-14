@@ -39,18 +39,18 @@ const Page = () => {
 
   return (
     <div className="p-4">
-      {/* <button
+      <button
         className="bg-blue-500 text-white px-4 py-2 mb-4 rounded"
         onClick={test}
       >
         Load PCs
-      </button> */}
+      </button>
 
-      {/* {loading && <p>Loading...</p>}
-      {error && <p className="text-red-500">Error: {error}</p>} */}
+      {loading && <p>Loading...</p>}
+      {error && <p className="text-red-500">Error: {error}</p>}
 
       <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-        {/* {pcs.map((pc) => (
+        {pcs.map((pc) => (
           <div
             key={pc.pc_mac}
             className={`p-2 rounded shadow text-white text-center ${getStatusColor(pc)}`}
@@ -61,7 +61,7 @@ const Page = () => {
               {pc.pc_in_using ? "In Use" : "Available"}
             </p>
           </div>
-        ))} */}
+        ))}
       </div>
     </div>
   );
