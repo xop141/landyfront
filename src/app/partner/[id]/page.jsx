@@ -18,6 +18,8 @@ const Page = () => {
           ? response.data
           : response.data?.data || [];
         setPcs(dataArray);
+        console.log(dataArray);
+        
       } catch (err) {
         setError(err.response?.data || err.message);
       } finally {
