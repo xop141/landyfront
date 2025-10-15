@@ -7,7 +7,7 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Load PCs automatically
+  // Auto-load PCs
   useEffect(() => {
     const fetchPCs = async () => {
       try {
@@ -32,103 +32,93 @@ const Page = () => {
     return pc.pc_in_using ? "bg-red-600" : "bg-green-600";
   };
 
-  // Group PCs by area name
+  // Group PCs by area (room)
   const grouped = pcs.reduce((acc, pc) => {
     if (!acc[pc.pc_area_name]) acc[pc.pc_area_name] = [];
     acc[pc.pc_area_name].push(pc);
     return acc;
   }, {});
 
-  // Separate VIP PCs if area name or other logic matches
-  const vipPCs = pcs.filter((pc) =>
-    pc.pc_area_name?.toLowerCase().includes("vip")
+  // Separate VIP rooms
+  const vipRooms = Object.entries(grouped).filter(([areaName]) =>
+    areaName.toLowerCase().includes("vip")
   );
-  const normalAreas = Object.entries(grouped).filter(
+  const normalRooms = Object.entries(grouped).filter(
     ([areaName]) => !areaName.toLowerCase().includes("vip")
   );
 
+  const Room = ({ name, pcsInRoom, vip }) => (
+    <div
+      className={`p-5 rounded-2xl shadow-lg ${
+        vip
+          ? "bg-yellow-950 border border-yellow-600"
+          : "bg-gray-900 border border-gray-800"
+      }`}
+    >
+      <h2
+        className={`text-lg font-semibold mb-4 ${
+          vip ? "text-yellow-400" : "text-gray-200"
+        }`}
+      >
+        {vip ? `⭐ VIP ${name}` : name}
+      </h2>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-4">
+        {pcsInRoom.map((pc) => (
+          <div
+            key={pc.pc_mac}
+            title={`Name: ${pc.pc_name}\nIP: ${pc.pc_ip}\nStatus: ${
+              !pc.pc_enabled
+                ? "Disabled"
+                : pc.pc_in_using
+                ? "In Use"
+                : "Free"
+            }`}
+            className={`flex flex-col items-center justify-center h-24 rounded-lg shadow-md text-sm font-semibold transition-transform duration-150 ${
+              getStatusColor(pc)
+            } hover:scale-105`}
+          >
+            <span>{pc.pc_name}</span>
+            <span className="text-xs opacity-80">
+              {!pc.pc_enabled
+                ? "Disabled"
+                : pc.pc_in_using
+                ? "In Use"
+                : "Free"}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900 text-gray-100 p-4 md:p-10">
+    <div className="min-h-screen bg-gray-950 text-gray-100 p-6 md:p-10 space-y-10">
       {loading && (
         <p className="text-center text-gray-400 animate-pulse">Loading PCs...</p>
       )}
       {error && (
-        <p className="text-center text-red-400 font-medium">
-          ⚠️ Error: {error}
-        </p>
+        <p className="text-center text-red-400 font-medium">⚠️ {error}</p>
       )}
 
-      {!loading && (
-        <div className="max-w-7xl mx-auto space-y-12">
-          {/* VIP Section */}
-          {vipPCs.length > 0 && (
-            <div>
-              <h2 className="text-xl font-semibold mb-4 text-yellow-400 tracking-wide">
-                ⭐ VIP ZONE
-              </h2>
-              <div className="relative overflow-x-auto rounded-2xl border border-yellow-600 p-3 bg-gradient-to-r from-yellow-950/40 to-gray-900 shadow-[0_0_20px_rgba(255,215,0,0.2)]">
-                <div className="flex gap-3 min-w-max">
-                  {vipPCs.map((pc) => (
-                    <div
-                      key={pc.pc_mac}
-                      title={`${pc.pc_name} - ${pc.pc_ip}`}
-                      className={`flex flex-col items-center justify-center w-24 h-24 rounded-lg shadow-md text-sm font-semibold transition-all ${getStatusColor(
-                        pc
-                      )} hover:scale-105`}
-                    >
-                      <span>{pc.pc_name}</span>
-                      <span className="text-xs opacity-80">
-                        {!pc.pc_enabled
-                          ? "Disabled"
-                          : pc.pc_in_using
-                          ? "In Use"
-                          : "Free"}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Regular Areas */}
-          {normalAreas.map(([areaName, pcsInArea]) => (
-            <div
-              key={areaName}
-              className="bg-gray-900 border border-gray-800 rounded-2xl shadow-lg p-5"
-            >
-              <h2 className="text-lg font-semibold mb-3 text-gray-300 border-b border-gray-700 pb-1">
-                {areaName}
-              </h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
-                {pcsInArea.map((pc) => (
-                  <div
-                    key={pc.pc_mac}
-                    title={`${pc.pc_name} - ${pc.pc_ip}`}
-                    className={`flex flex-col items-center justify-center rounded-lg h-24 shadow-md text-sm font-semibold ${getStatusColor(
-                      pc
-                    )} hover:scale-105 transition-transform duration-150`}
-                  >
-                    <span>{pc.pc_name}</span>
-                    <span className="text-xs opacity-80">
-                      {!pc.pc_enabled
-                        ? "Disabled"
-                        : pc.pc_in_using
-                        ? "In Use"
-                        : "Free"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+      {!loading && !error && (
+        <>
+          {/* VIP Rooms */}
+          {vipRooms.map(([roomName, pcsInRoom]) => (
+            <Room key={roomName} name={roomName} pcsInRoom={pcsInRoom} vip />
           ))}
 
-          {pcs.length === 0 && !error && (
+          {/* Normal Rooms */}
+          {normalRooms.map(([roomName, pcsInRoom]) => (
+            <Room key={roomName} name={roomName} pcsInRoom={pcsInRoom} />
+          ))}
+
+          {pcs.length === 0 && (
             <p className="text-center text-gray-500 italic">
-              No PCs found in database.
+              No PCs found.
             </p>
           )}
-        </div>
+        </>
       )}
     </div>
   );
