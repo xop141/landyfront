@@ -1,37 +1,41 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const Page = () => {
   const [pcs, setPcs] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const test = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await axios.post(
-        "https://landybackend.onrender.com/pc/member"
-      );
+  // auto-load pcs when component mounts
+  useEffect(() => {
+    const fetchPCs = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.post(
+          "https://landybackend.onrender.com/pc/member"
+        );
 
-      const dataArray = Array.isArray(response.data)
-        ? response.data
-        : response.data?.data || [];
+        const dataArray = Array.isArray(response.data)
+          ? response.data
+          : response.data?.data || [];
 
-      setPcs(dataArray);
-      console.log(dataArray);
-    } catch (err) {
-      console.error("Error fetching members:", err.response?.data || err.message);
-      setError(err.response?.data || err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+        setPcs(dataArray);
+      } catch (err) {
+        console.error("Error fetching members:", err.response?.data || err.message);
+        setError(err.response?.data || err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPCs();
+  }, []);
 
   const getStatusColor = (pc) => {
-    if (!pc.pc_enabled) return "bg-gray-400";
-    return pc.pc_in_using ? "bg-red-500" : "bg-green-500";
+    if (!pc.pc_enabled) return "bg-gray-700"; // disabled
+    return pc.pc_in_using ? "bg-red-600" : "bg-green-600";
   };
 
   // group by area name
@@ -42,48 +46,34 @@ const Page = () => {
   }, {});
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-200 p-6">
-      <div className="flex flex-col items-center">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">
-          💻 PC Map Overview
-        </h1>
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900 text-gray-100 p-6">
+      {loading && (
+        <p className="text-center text-gray-400 animate-pulse">Loading PCs...</p>
+      )}
+      {error && <p className="text-center text-red-400">⚠️ {error}</p>}
 
-        <button
-          onClick={test}
-          disabled={loading}
-          className={`px-6 py-2 rounded-lg text-white font-semibold shadow-md transition-all duration-200 ${
-            loading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700 active:scale-95"
-          }`}
-        >
-          {loading ? "Loading..." : "Load PCs"}
-        </button>
-
-        {error && (
-          <p className="text-red-600 mt-4 font-medium">⚠️ {error}</p>
-        )}
-      </div>
-
-      {/* Map layout */}
-      <div className="mt-8 space-y-12 max-w-6xl mx-auto">
+      <div className="space-y-10 max-w-6xl mx-auto">
         {Object.entries(grouped).map(([areaName, pcsInArea]) => (
           <div
             key={areaName}
-            className="relative bg-white rounded-2xl shadow-md p-4 border border-gray-200"
+            className="relative bg-gray-900 border border-gray-800 rounded-2xl shadow-lg p-4"
           >
-            <h2 className="text-lg font-semibold text-gray-700 mb-2">
+            <h2 className="text-lg font-semibold mb-3 text-gray-200 border-b border-gray-800 pb-1">
               {areaName}
             </h2>
 
-            <div className="relative h-[300px] w-full bg-gray-100 rounded-xl overflow-hidden">
+            <div className="relative h-[300px] w-full bg-gray-800 rounded-xl overflow-hidden">
               {pcsInArea.map((pc) => (
                 <div
                   key={pc.pc_mac}
-                  title={`IP: ${pc.pc_ip}\nStatus: ${
-                    pc.pc_in_using ? "In Use" : "Available"
+                  title={`Name: ${pc.pc_name}\nIP: ${pc.pc_ip}\nStatus: ${
+                    !pc.pc_enabled
+                      ? "Disabled"
+                      : pc.pc_in_using
+                      ? "In Use"
+                      : "Available"
                   }`}
-                  className={`absolute flex flex-col items-center justify-center w-16 h-16 rounded-lg text-white font-medium shadow-md cursor-pointer transition-all duration-200 ${getStatusColor(
+                  className={`absolute flex flex-col items-center justify-center w-16 h-16 rounded-lg text-white font-medium shadow-md cursor-pointer transition-transform duration-200 ${getStatusColor(
                     pc
                   )} hover:scale-105`}
                   style={{
@@ -93,7 +83,11 @@ const Page = () => {
                 >
                   <span className="text-sm">{pc.pc_name}</span>
                   <span className="text-[10px] opacity-80">
-                    {pc.pc_in_using ? "In Use" : "Free"}
+                    {!pc.pc_enabled
+                      ? "Disabled"
+                      : pc.pc_in_using
+                      ? "In Use"
+                      : "Free"}
                   </span>
                 </div>
               ))}
@@ -102,9 +96,9 @@ const Page = () => {
         ))}
       </div>
 
-      {pcs.length === 0 && !loading && !error && (
-        <p className="text-gray-500 mt-8 text-center text-sm italic">
-          No data yet. Click “Load PCs” to fetch info.
+      {!loading && pcs.length === 0 && !error && (
+        <p className="text-gray-500 mt-10 text-center text-sm italic">
+          No PCs found.
         </p>
       )}
     </div>
